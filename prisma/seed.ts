@@ -45,6 +45,7 @@ async function main() {
         nearbyWarehouses: p.nearbyWarehouses,
         roroAvailable: p.roroAvailable,
         containerAvailable: p.containerAvailable,
+        dataVerified: p.dataVerified,
       },
     });
   }

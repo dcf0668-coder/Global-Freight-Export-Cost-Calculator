@@ -78,6 +78,7 @@ export interface Port {
   nearbyWarehouses: string[];
   roroAvailable: boolean;
   containerAvailable: boolean;
+  dataVerified: boolean; // false = best-effort estimate pending verification against the official UN/LOCODE registry
 }
 
 export interface ShippingLine {

@@ -103,6 +103,7 @@ model Port {
   nearbyWarehouses    String[]
   roroAvailable       Boolean   @default(false)
   containerAvailable  Boolean   @default(true)
+  dataVerified        Boolean   @default(false) // false = coordinates/UNLOCODE are a best-effort estimate pending verification against the official UN/LOCODE registry
   originRates         FreightRate[] @relation("OriginPort")
   destinationRates    FreightRate[] @relation("DestinationPort")
   portCharges         PortCharge[]
