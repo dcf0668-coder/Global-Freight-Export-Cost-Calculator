@@ -74,11 +74,13 @@ model Country {
   name              String       @unique
   isoCode           String       @unique // ISO 3166-1 alpha-2
   region            String
+  subregion         String?
   currency          String
   voltage           String
   drivingSide       DrivingSide
-  importDutyRate    Float        @default(0) // percentage
-  vatRate           Float        @default(0) // percentage
+  importDutyRate    Float        @default(0) // percentage — see tariffVerified
+  vatRate           Float        @default(0) // percentage — see tariffVerified
+  tariffVerified    Boolean      @default(false) // false = regional-average placeholder, not sourced from an authoritative tariff database yet
   requiresInspection Boolean     @default(false)
   requiredDocuments String[]
   ports             Port[]
@@ -104,9 +106,33 @@ model Port {
   originRates         FreightRate[] @relation("OriginPort")
   destinationRates    FreightRate[] @relation("DestinationPort")
   portCharges         PortCharge[]
+  capability          PortCapability?
+  routesAsOrigin      ShippingRoute[] @relation("RouteOrigin")
+  routesAsDestination ShippingRoute[] @relation("RouteDestination")
 
   @@map("ports")
   @@index([countryId])
+}
+
+/// Detailed operational capability profile for a port, kept separate from
+/// the Port model so it can grow (new capability fields) without touching
+/// the core port record or its many relations.
+model PortCapability {
+  id                    String   @id @default(cuid())
+  portId                String   @unique
+  port                  Port     @relation(fields: [portId], references: [id], onDelete: Cascade)
+  annualTeuCapacity     Int?     // approximate throughput capacity, TEU/year
+  maxVesselLoaM         Float?   // max vessel length overall the port can berth, meters
+  maxDraftM             Float?   // max channel/berth draft, meters
+  reeferPlugs           Int?     // number of refrigerated container plugs available
+  roroRampCapacityTons  Float?   // max ramp weight for RoRo vehicle discharge
+  bondedWarehouse       Boolean  @default(false)
+  railConnected         Boolean  @default(false)
+  customsBrokerOnSite   Boolean  @default(false)
+  hazmatHandling        Boolean  @default(false)
+  updatedAt             DateTime @updatedAt
+
+  @@map("port_capabilities")
 }
 
 model ShippingLine {
@@ -120,8 +146,32 @@ model ShippingLine {
   offersRoro       Boolean  @default(false)
   description      String
   freightRates     FreightRate[]
+  shippingRoutes   ShippingRoute[]
 
   @@map("shipping_lines")
+}
+
+/// A named sailing service/rotation (e.g. "Asia-West Africa Express")
+/// operated by a shipping line between two anchor ports, optionally calling
+/// at intermediate ports. FreightRate rows reference a route when the price
+/// is tied to a specific scheduled service rather than a generic lane.
+model ShippingRoute {
+  id                  String        @id @default(cuid())
+  name                String
+  shippingLineId      String
+  shippingLine        ShippingLine  @relation(fields: [shippingLineId], references: [id], onDelete: Cascade)
+  originPortId        String
+  originPort          Port          @relation("RouteOrigin", fields: [originPortId], references: [id], onDelete: Cascade)
+  destinationPortId   String
+  destinationPort     Port          @relation("RouteDestination", fields: [destinationPortId], references: [id], onDelete: Cascade)
+  intermediatePortIds String[]      // ordered list of Port ids called at along the rotation
+  frequencyDays       Int           // sailing frequency, e.g. 7 = weekly
+  transitDays         Int
+  active              Boolean       @default(true)
+  freightRates        FreightRate[]
+
+  @@map("shipping_routes")
+  @@index([originPortId, destinationPortId])
 }
 
 model FreightRate {
@@ -132,6 +182,8 @@ model FreightRate {
   destinationPort    Port           @relation("DestinationPort", fields: [destinationPortId], references: [id], onDelete: Cascade)
   shippingLineId     String
   shippingLine       ShippingLine   @relation(fields: [shippingLineId], references: [id], onDelete: Cascade)
+  shippingRouteId     String?
+  shippingRoute       ShippingRoute? @relation(fields: [shippingRouteId], references: [id], onDelete: SetNull)
   cargoType          CargoType
   containerSize      ContainerSize?
   baseRatePerUnit    Float
@@ -153,6 +205,26 @@ model VehicleTypeProfile {
   baseRoroRate      Float // base rate multiplier for RoRo calculator
 
   @@map("vehicle_type_profiles")
+}
+
+/// Specific make/model catalog entry, used to give the RoRo calculator exact
+/// dimensions instead of only a generic VehicleTypeProfile category average.
+model VehicleModel {
+  id          String      @id @default(cuid())
+  make        String
+  model       String
+  variant     String?
+  vehicleType VehicleType
+  lengthM     Float
+  widthM      Float
+  heightM     Float
+  weightKg    Float
+  isEV        Boolean     @default(false)
+  modelYear   Int?
+
+  @@unique([make, model, variant])
+  @@map("vehicle_models")
+  @@index([vehicleType])
 }
 
 model ContainerTypeProfile {

@@ -15,14 +15,55 @@ export interface Country {
   name: string;
   isoCode: string; // ISO 3166-1 alpha-2
   region: string;
+  subregion?: string;
   currency: string;
   voltage: string;
   drivingSide: "LEFT" | "RIGHT";
-  importDutyRate: number; // percentage, e.g. 10 = 10%
-  vatRate: number; // percentage
+  importDutyRate: number; // percentage, e.g. 10 = 10% — see tariffVerified
+  vatRate: number; // percentage — see tariffVerified
+  tariffVerified: boolean; // false = regional-average placeholder, not yet sourced from an authoritative tariff database
   requiresInspection: boolean;
   requiredDocuments: string[];
   popularPorts: string[]; // port ids
+}
+
+export interface PortCapability {
+  portId: string;
+  annualTeuCapacity?: number;
+  maxVesselLoaM?: number;
+  maxDraftM?: number;
+  reeferPlugs?: number;
+  roroRampCapacityTons?: number;
+  bondedWarehouse: boolean;
+  railConnected: boolean;
+  customsBrokerOnSite: boolean;
+  hazmatHandling: boolean;
+}
+
+export interface ShippingRoute {
+  id: string;
+  name: string;
+  shippingLineId: string;
+  originPortId: string;
+  destinationPortId: string;
+  intermediatePortIds: string[];
+  frequencyDays: number;
+  transitDays: number;
+  active: boolean;
+}
+
+export interface VehicleModel {
+  id: string;
+  make: string;
+  model: string;
+  variant?: string;
+  vehicleType: VehicleType;
+  lengthM: number;
+  widthM: number;
+  heightM: number;
+  weightKg: number;
+  isEV: boolean;
+  modelYear?: number;
 }
 
 export interface Port {

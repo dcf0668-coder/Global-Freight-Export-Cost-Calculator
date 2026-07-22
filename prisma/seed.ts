@@ -15,35 +15,18 @@ async function main() {
         name: c.name,
         isoCode: c.isoCode,
         region: c.region,
+        subregion: c.subregion,
         currency: c.currency,
         voltage: c.voltage,
         drivingSide: c.drivingSide,
         importDutyRate: c.importDutyRate,
         vatRate: c.vatRate,
+        tariffVerified: c.tariffVerified,
         requiresInspection: c.requiresInspection,
         requiredDocuments: c.requiredDocuments,
       },
     });
   }
-
-  // China isn't in the sample "destination" country list (it's always origin),
-  // so ensure it exists for the Port -> Country relation.
-  await prisma.country.upsert({
-    where: { isoCode: "CN" },
-    update: {},
-    create: {
-      name: "China",
-      isoCode: "CN",
-      region: "East Asia",
-      currency: "CNY",
-      voltage: "220V",
-      drivingSide: "RIGHT",
-      importDutyRate: 0,
-      vatRate: 13,
-      requiresInspection: false,
-      requiredDocuments: ["Bill of Lading", "Commercial Invoice", "Packing List", "Export License"],
-    },
-  });
 
   console.log("Seeding ports...");
   for (const p of ports) {
