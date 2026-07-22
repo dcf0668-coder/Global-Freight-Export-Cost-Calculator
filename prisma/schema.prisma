@@ -1,0 +1,225 @@
+// Global Freight Calculator — Database Schema
+// PostgreSQL via Supabase. Run `npx prisma migrate dev` after setting DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  EDITOR
+  USER
+}
+
+enum CargoType {
+  FCL
+  LCL
+  RORO
+  VEHICLE
+  AIR
+  RAIL
+}
+
+enum ContainerSize {
+  TWENTY_GP
+  FORTY_GP
+  FORTY_HQ
+  FORTY_FIVE_HQ
+}
+
+enum VehicleType {
+  SUV
+  SEDAN
+  PICKUP
+  TRUCK
+  BUS
+  EV
+  HYBRID
+}
+
+enum DrivingSide {
+  LEFT
+  RIGHT
+}
+
+enum BlogCategory {
+  IMPORT
+  EXPORT
+  SHIPPING
+  FREIGHT
+  AUTOMOBILE_EXPORT
+  TRADE_GUIDE
+}
+
+model User {
+  id            String   @id @default(cuid())
+  supabaseUid   String   @unique
+  email         String   @unique
+  name          String?
+  role          Role     @default(USER)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  blogPosts     BlogPost[]
+
+  @@map("users")
+}
+
+model Country {
+  id                String       @id @default(cuid())
+  name              String       @unique
+  isoCode           String       @unique // ISO 3166-1 alpha-2
+  region            String
+  currency          String
+  voltage           String
+  drivingSide       DrivingSide
+  importDutyRate    Float        @default(0) // percentage
+  vatRate           Float        @default(0) // percentage
+  requiresInspection Boolean     @default(false)
+  requiredDocuments String[]
+  ports             Port[]
+  exchangeRate      ExchangeRate?
+  taxTables         TaxTable[]
+
+  @@map("countries")
+  @@index([region])
+}
+
+model Port {
+  id                 String    @id @default(cuid())
+  name               String
+  unlocode           String    @unique
+  countryId          String
+  country            Country   @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  latitude            Float
+  longitude           Float
+  nearbyAirports      String[]
+  nearbyWarehouses    String[]
+  roroAvailable       Boolean   @default(false)
+  containerAvailable  Boolean   @default(true)
+  originRates         FreightRate[] @relation("OriginPort")
+  destinationRates    FreightRate[] @relation("DestinationPort")
+  portCharges         PortCharge[]
+
+  @@map("ports")
+  @@index([countryId])
+}
+
+model ShippingLine {
+  id               String   @id @default(cuid())
+  name             String   @unique
+  slug             String   @unique
+  website          String
+  trackingUrl      String
+  coverageRegions  String[]
+  offersContainer  Boolean  @default(true)
+  offersRoro       Boolean  @default(false)
+  description      String
+  freightRates     FreightRate[]
+
+  @@map("shipping_lines")
+}
+
+model FreightRate {
+  id                 String         @id @default(cuid())
+  originPortId       String
+  originPort         Port           @relation("OriginPort", fields: [originPortId], references: [id], onDelete: Cascade)
+  destinationPortId  String
+  destinationPort    Port           @relation("DestinationPort", fields: [destinationPortId], references: [id], onDelete: Cascade)
+  shippingLineId     String
+  shippingLine       ShippingLine   @relation(fields: [shippingLineId], references: [id], onDelete: Cascade)
+  cargoType          CargoType
+  containerSize      ContainerSize?
+  baseRatePerUnit    Float
+  transitDays        Int
+  effectiveFrom      DateTime       @default(now())
+  effectiveTo        DateTime?
+
+  @@map("freight_rates")
+  @@index([originPortId, destinationPortId, cargoType])
+}
+
+model VehicleTypeProfile {
+  id                String      @id @default(cuid())
+  type              VehicleType @unique
+  avgLengthM        Float
+  avgWidthM         Float
+  avgHeightM        Float
+  avgWeightKg       Float
+  baseRoroRate      Float // base rate multiplier for RoRo calculator
+
+  @@map("vehicle_type_profiles")
+}
+
+model ContainerTypeProfile {
+  id            String        @id @default(cuid())
+  size          ContainerSize @unique
+  maxCbm        Float
+  maxPayloadKg  Float
+  internalLenM  Float
+  internalWidM  Float
+  internalHgtM  Float
+
+  @@map("container_type_profiles")
+}
+
+model PortCharge {
+  id                  String   @id @default(cuid())
+  portId              String
+  port                Port     @relation(fields: [portId], references: [id], onDelete: Cascade)
+  documentationFee    Float    @default(0)
+  inspectionFee       Float    @default(0)
+  terminalHandlingFee Float    @default(0)
+  customsClearanceFee Float    @default(0)
+
+  @@map("port_charges")
+  @@index([portId])
+}
+
+model TaxTable {
+  id             String   @id @default(cuid())
+  countryId      String
+  country        Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  hsCodePrefix   String? // optional HS-code-specific override
+  importDutyRate Float
+  vatRate        Float
+  notes          String?
+
+  @@map("tax_tables")
+  @@index([countryId])
+}
+
+model ExchangeRate {
+  id           String   @id @default(cuid())
+  countryId    String   @unique
+  country      Country  @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  currency     String
+  rateToUsd    Float
+  updatedAt    DateTime @updatedAt
+
+  @@map("exchange_rates")
+}
+
+model BlogPost {
+  id              String       @id @default(cuid())
+  slug            String       @unique
+  title           String
+  excerpt         String
+  content         String       @db.Text
+  category        BlogCategory
+  coverImage      String?
+  authorId        String
+  author          User         @relation(fields: [authorId], references: [id])
+  publishedAt     DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  readingTimeMinutes Int       @default(5)
+
+  @@map("blog_posts")
+  @@index([category])
+  @@index([slug])
+}
