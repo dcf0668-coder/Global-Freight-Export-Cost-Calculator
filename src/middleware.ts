@@ -1,16 +1,22 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-/**
- * Refreshes the Supabase auth session cookie on every request so server
- * components always see a valid session. Required when using @supabase/ssr.
- */
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({ request });
+  let response = NextResponse.next({
+    request,
+  });
+
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  // Prevent middleware crash if environment variables are missing
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return response;
+  }
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
@@ -18,28 +24,36 @@ export async function middleware(request: NextRequest) {
         },
 
         setAll(
-          cookiesToSet: {
-            name: string;
-            value: string;
-            options?: {
-              path?: string;
-              maxAge?: number;
-              expires?: Date;
-              httpOnly?: boolean;
-              secure?: boolean;
-              sameSite?: boolean | "lax" | "strict" | "none";
-            };
-          }[]
-        ) {
+  cookiesToSet: {
+    name: string;
+    value: string;
+    options?: {
+      path?: string;
+      maxAge?: number;
+      expires?: Date;
+      httpOnly?: boolean;
+      secure?: boolean;
+      sameSite?: boolean | "lax" | "strict" | "none";
+    };
+  }[]
+) {
           cookiesToSet.forEach(({ name, value }) => {
             request.cookies.set(name, value);
           });
 
-          response = NextResponse.next({ request });
-
-          cookiesToSet.forEach(({ name, value, options }) => {
-            response.cookies.set(name, value, options);
+          response = NextResponse.next({
+            request,
           });
+
+          cookiesToSet.forEach(
+            ({ name, value, options }) => {
+              response.cookies.set(
+                name,
+                value,
+                options
+              );
+            }
+          );
         },
       },
     }
@@ -49,6 +63,7 @@ export async function middleware(request: NextRequest) {
 
   return response;
 }
+
 
 export const config = {
   matcher: [
