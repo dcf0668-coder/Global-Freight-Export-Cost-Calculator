@@ -2,9 +2,11 @@ import { CalculatorInput, CalculatorResult, CargoType } from "@/types";
 import { round } from "@/lib/utils";
 
 // ---------------------------------------------------------------------------
-// Baseline rate tables. In production these are overridden by live FreightRate
-// rows fetched from the database (see /api/calculate); these constants act as
-// a fallback so the calculator still works without a populated DB.
+// Baseline rate tables. These are the FALLBACK used when no matching
+// FreightRate row exists in the database (see src/lib/db/rates.ts and
+// /api/calculate) — e.g. no DB connected yet, or this specific lane/cargo
+// type hasn't had a real rate entered. Once a real rate exists for a lane,
+// the DB value is used instead and the result is flagged rateSource: "live".
 // ---------------------------------------------------------------------------
 
 const BASE_RATE_PER_CBM_LCL = 45; // USD per CBM, China -> avg. worldwide port
@@ -38,41 +40,53 @@ const CO2_FACTOR_PER_TONNE_KM: Record<CargoType, number> = {
 };
 const AVG_SEA_DISTANCE_KM = 18000; // approximate China -> global average
 
+export interface FreightRateOverride {
+  baseRatePerUnit: number;
+  transitDays: number;
+}
+
 /**
  * Estimate total freight cost and ancillary charges for a shipment.
- * This is a deterministic estimator meant to give exporters a fast, directional
- * quote — not a binding rate. Live integrations should replace the base rate
- * lookups with data from `FreightRate` records for the selected trade lane.
+ *
+ * When `rateOverride` is supplied (a real FreightRate row matched for this
+ * exact lane/cargo type), it replaces the static per-unit rate and transit
+ * time below — surcharge logic (dangerous goods, insurance, customs,
+ * delivery) is unchanged either way, since those depend on the shipment
+ * itself rather than the carrier's base rate.
  */
-export function calculateFreight(input: CalculatorInput): CalculatorResult {
+export function calculateFreight(input: CalculatorInput, rateOverride?: FreightRateOverride | null): CalculatorResult {
   let baseCost = 0;
 
   switch (input.cargoType) {
     case "FCL": {
-      const size = input.containerSize ?? "20GP";
-      baseCost = BASE_RATE_PER_CONTAINER[size] ?? BASE_RATE_PER_CONTAINER["20GP"]!;
+      if (rateOverride) {
+        baseCost = rateOverride.baseRatePerUnit;
+      } else {
+        const size = input.containerSize ?? "20GP";
+        baseCost = BASE_RATE_PER_CONTAINER[size] ?? BASE_RATE_PER_CONTAINER["20GP"]!;
+      }
       break;
     }
     case "LCL": {
       // LCL is priced per CBM with a practical minimum charge (industry standard "W/M" logic).
       const chargeableCbm = Math.max(input.volumeCbm, 1);
-      baseCost = chargeableCbm * BASE_RATE_PER_CBM_LCL;
+      baseCost = chargeableCbm * (rateOverride ? rateOverride.baseRatePerUnit : BASE_RATE_PER_CBM_LCL);
       break;
     }
     case "RORO":
     case "VEHICLE": {
-      baseCost = BASE_RATE_PER_VEHICLE_RORO;
+      baseCost = rateOverride ? rateOverride.baseRatePerUnit : BASE_RATE_PER_VEHICLE_RORO;
       break;
     }
     case "AIR": {
       // Air freight uses the greater of actual weight and volumetric weight (1:167 kg/CBM standard).
       const volumetricWeight = input.volumeCbm * 167;
       const chargeableWeight = Math.max(input.weightKg, volumetricWeight);
-      baseCost = chargeableWeight * BASE_RATE_PER_KG_AIR;
+      baseCost = chargeableWeight * (rateOverride ? rateOverride.baseRatePerUnit : BASE_RATE_PER_KG_AIR);
       break;
     }
     case "RAIL": {
-      baseCost = Math.max(input.weightKg, 1) * BASE_RATE_PER_KG_RAIL;
+      baseCost = Math.max(input.weightKg, 1) * (rateOverride ? rateOverride.baseRatePerUnit : BASE_RATE_PER_KG_RAIL);
       break;
     }
   }
@@ -91,6 +105,9 @@ export function calculateFreight(input: CalculatorInput): CalculatorResult {
   const co2EstimateKg = round(tonnage * AVG_SEA_DISTANCE_KM * CO2_FACTOR_PER_TONNE_KM[input.cargoType]);
 
   const recommendedMethod = recommendMethod(input);
+  const transitTimeDays = rateOverride
+    ? { min: rateOverride.transitDays, max: rateOverride.transitDays }
+    : TRANSIT_DAYS[input.cargoType];
 
   return {
     estimatedFreightCost: round(baseCost),
@@ -102,9 +119,10 @@ export function calculateFreight(input: CalculatorInput): CalculatorResult {
     },
     totalEstimate,
     currency: "USD",
-    transitTimeDays: TRANSIT_DAYS[input.cargoType],
+    transitTimeDays,
     recommendedMethod,
     co2EstimateKg,
+    rateSource: rateOverride ? "live" : "estimated",
     breakdown: [
       { label: "Base Freight", amount: round(baseCost) },
       ...(dangerousGoodsSurcharge ? [{ label: "Dangerous Goods Surcharge", amount: dangerousGoodsSurcharge }] : []),

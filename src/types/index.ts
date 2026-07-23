@@ -133,6 +133,10 @@ export interface CalculatorResult {
   recommendedMethod: CargoType;
   co2EstimateKg: number;
   breakdown: { label: string; amount: number }[];
+  /** "live" when a matching FreightRate/PortCharge row was found in the DB, "estimated" when using the static fallback model. */
+  rateSource: "live" | "estimated";
+  /** Present only when a live ExchangeRate row exists for the destination country. */
+  convertedEstimate?: { amount: number; currency: string };
 }
 
 export interface RoroCalculatorInput {
@@ -155,6 +159,8 @@ export interface RoroCalculatorResult {
   totalEstimate: number;
   currency: string;
   transitTimeDays: { min: number; max: number };
+  rateSource: "live" | "estimated";
+  convertedEstimate?: { amount: number; currency: string };
 }
 
 export interface ContainerCalculatorInput {

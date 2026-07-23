@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ports } from "@/lib/data/ports";
 import { RoroCalculatorInput, RoroCalculatorResult, VehicleType } from "@/types";
 import { formatCurrency } from "@/lib/utils";
@@ -95,11 +96,23 @@ export function RoroCalculatorForm() {
       <div className="lg:col-span-2">
         {result ? (
           <Card className="sticky top-24 border-primary/30">
-            <CardHeader><CardTitle className="flex items-center gap-2"><Car className="h-5 w-5" /> RoRo Estimate</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                <span className="flex items-center gap-2"><Car className="h-5 w-5" /> RoRo Estimate</span>
+                <Badge variant={result.rateSource === "live" ? "success" : "secondary"}>
+                  {result.rateSource === "live" ? "Live Rate" : "Estimated"}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <p className="text-sm text-muted-foreground">Total Estimate</p>
                 <p className="text-4xl font-bold">{formatCurrency(result.totalEstimate, result.currency)}</p>
+                {result.convertedEstimate && (
+                  <p className="text-sm text-muted-foreground">
+                    ≈ {formatCurrency(result.convertedEstimate.amount, result.convertedEstimate.currency)}
+                  </p>
+                )}
               </div>
               <div className="rounded-md bg-muted p-3 text-sm">
                 <p className="text-muted-foreground">Transit Time</p>

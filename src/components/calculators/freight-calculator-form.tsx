@@ -193,13 +193,23 @@ export function FreightCalculatorForm({ initialDestination }: { initialDestinati
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     Estimate
-                    <Badge variant="success">{result.recommendedMethod}</Badge>
+                    <div className="flex gap-1.5">
+                      <Badge variant={result.rateSource === "live" ? "success" : "secondary"}>
+                        {result.rateSource === "live" ? "Live Rate" : "Estimated"}
+                      </Badge>
+                      <Badge variant="outline">{result.recommendedMethod}</Badge>
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Total Estimated Cost</p>
                     <p className="text-4xl font-bold">{formatCurrency(result.totalEstimate, result.currency)}</p>
+                    {result.convertedEstimate && (
+                      <p className="text-sm text-muted-foreground">
+                        ≈ {formatCurrency(result.convertedEstimate.amount, result.convertedEstimate.currency)}
+                      </p>
+                    )}
                   </div>
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div className="rounded-md bg-muted p-3">

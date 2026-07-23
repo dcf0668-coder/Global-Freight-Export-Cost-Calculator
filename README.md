@@ -14,10 +14,23 @@ A shipping cost and export cost estimation platform for exporters, importers, an
 ## What's fully working right now
 
 - All 4 calculators (Freight, RoRo, Container/CBM, Export Landed Cost) with real cost-modeling logic — not placeholders. See `src/lib/calculations/`.
-- Country / Port / Shipping Line / Blog browse pages, populated with realistic sample data (`src/lib/data/`).
+- **Live-rate DB integration** (Phase C): `/api/calculate` tries a real database lookup first — see `src/lib/db/rates.ts` and the "Live rate calculation" section below — and only falls back to the static estimator when no matching rate exists. Every result is tagged `rateSource: "live" | "estimated"` so the UI can show which one you got (look for the "Live Rate" / "Estimated" badge on the Freight and RoRo calculators).
+- Country / Port / Shipping Line / Blog browse pages, populated with 243 countries and 501 ports (see Phase A/B notes below).
 - REST API: `/api/calculate`, `/api/countries`, `/api/ports`, `/api/shipping-lines`, `/api/blog`, `/api/search`.
 - Dark/light mode, responsive layout, SEO (metadata, `robots.ts`, `sitemap.ts`, JSON-LD on blog posts, canonical URLs).
-- Full Prisma schema modeling every entity in the spec (countries, ports, shipping lines, freight rates, vehicle/container profiles, port charges, tax tables, exchange rates, blog, users).
+- Full Prisma schema modeling every entity in the spec (countries, ports, shipping lines, freight rates, shipping routes, port capabilities, vehicle models, port charges, tax tables, exchange rates, blog, users).
+
+## Live rate calculation (Phase C)
+
+`/api/calculate` (freight and RoRo modes) now works like this:
+
+1. Try to find a real `FreightRate` row in the database for the exact origin port + destination port + cargo type (+ container size for FCL). If found, use its rate and transit time, and — for the main freight calculator — also check for a real `PortCharge` row (real customs clearance fee) and a real `ExchangeRate` row (adds a `convertedEstimate` in the destination's local currency).
+2. If no `DATABASE_URL` is configured, the DB is unreachable, or no rate has been entered for that specific lane yet, it falls back to the static per-unit-cost estimator in `src/lib/calculations/freight.ts` / `roro.ts` — the API never errors out just because the database isn't set up.
+3. The response always includes `rateSource: "live" | "estimated"` so callers (and the UI) know which path was used.
+
+The seed script (`prisma/seed.ts`) includes ~19 real China-origin lanes (Shanghai/Ningbo/Shenzhen/Guangzhou → Rotterdam, Hamburg, Los Angeles, Jebel Ali, Lagos, Durban, Melbourne, Santos, Singapore, Mumbai) plus port charges for 12 major ports, exchange rates for 15 currencies, and a 20-model vehicle catalog — enough to see the "Live Rate" badge working end-to-end once you connect a database and run `npm run db:seed`. Everything else falls back to `"estimated"`, which is expected — the seed data is a demonstration sample, not a full rate card.
+
+**Important id detail**: `prisma/seed.ts` seeds `Country`, `Port`, and `ShippingLine` rows using the *same ids* as the static frontend datasets in `src/lib/data/*.ts` (e.g. Country `"cn"`, Port `"cn-sha"`) instead of Prisma's default random cuids. This is required — the frontend's dropdowns send those static ids to the API, so the DB rows have to use them too for the live lookups to ever match. If you add new countries/ports directly in the DB (e.g. via the admin panel) instead of through the seed script, make sure the frontend has a matching entry (or switch the frontend to fetch from `/api/countries` / `/api/ports` instead of the static files) — otherwise those new rows just won't be reachable from the UI.
 
 ## What needs your credentials to go fully live
 
@@ -33,7 +46,7 @@ The app **runs today** using the static sample datasets in `src/lib/data/` as a 
    npm run db:seed
    npm run dev
    ```
-4. Update the API routes in `src/app/api/*` to query Prisma (`import { prisma } from "@/lib/prisma"`) instead of the static arrays in `src/lib/data/` — the shapes already match the Prisma schema, so this is a drop-in swap per route.
+4. The `/api/calculate` route is already wired to Prisma (see "Live rate calculation" above) — no further code changes needed for that endpoint. `/api/countries`, `/api/ports`, `/api/shipping-lines`, `/api/blog` still read from the static files in `src/lib/data/`; swapping those to Prisma queries is a similar drop-in change (the shapes already match the schema) if you want the browse pages backed by the DB too.
 
 ## Admin Panel
 
