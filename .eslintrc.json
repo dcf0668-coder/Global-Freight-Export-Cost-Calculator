@@ -1,3 +1,13 @@
-{
-  "extends": "next/core-web-vitals"
+"scripts": {
+  "dev": "next dev",
+  "build": "prisma generate && next build",
+  "start": "next start",
+  "lint": "next lint",
+  "lint:fix": "next lint --fix",
+  "typecheck": "tsc --noEmit",
+  "db:generate": "prisma generate",
+  "db:migrate": "prisma migrate dev",
+  "db:seed": "tsx prisma/seed.ts",
+  "db:studio": "prisma studio",
+  "postinstall": "prisma generate"
 }
