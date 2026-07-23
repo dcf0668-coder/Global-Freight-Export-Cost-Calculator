@@ -5,7 +5,7 @@
   "description": "Production-ready freight & export cost calculator for China-origin international shipping.",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
