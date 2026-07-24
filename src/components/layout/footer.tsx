@@ -1,4 +1,4 @@
-import Link from "next/link";
+﻿import Link from "next/link";
 import { Ship } from "lucide-react";
 
 const FOOTER_SECTIONS: { title: string; links: { href: string; label: string }[] }[] = [
@@ -61,7 +61,9 @@ export function Footer() {
       </div>
       <div className="border-t border-border/60 py-6">
         <div className="container flex flex-col items-center justify-between gap-2 text-xs text-muted-foreground sm:flex-row">
-          <p>© {new Date().getFullYear()} Global Freight Calculator. All estimates are indicative and non-binding.</p>
+          <p>© 2026 LM Wolfcat | Global Freight Calculator
+
+Shipping estimates are indicative only and may vary based on carrier rates, routes, and market conditions.</p>
           <p>Built for exporters shipping from China to the world.</p>
         </div>
       </div>
