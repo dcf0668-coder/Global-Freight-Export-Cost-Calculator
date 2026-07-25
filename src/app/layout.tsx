@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
@@ -9,7 +9,17 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://globalfreightcalculator.com";
 
-export const metadata: Metadata = {
+export const metadata = {
+  // 其它 metadata 保持不变
+
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL || "https://lang-mao.com"
+  ),
+
+  alternates: {
+    canonical: "./",
+  },
+};
   metadataBase: new URL(SITE_URL),
   title: {
     default: "Global Freight Calculator — Shipping Cost Estimator from China",
