@@ -1,10 +1,11 @@
-"use client";
+﻿"use client";
 
 import * as React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Ship, Plane, Train, Package, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { CountryCombobox } from "@/components/shared/country-combobox";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
@@ -100,14 +101,7 @@ export function FreightCalculatorForm({ initialDestination }: { initialDestinati
             </div>
             <div className="space-y-2">
               <Label>Destination Country</Label>
-              <Select value={destinationCountryId} onValueChange={setDestinationCountryId}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {countries.map((c) => (
-                    <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <CountryCombobox countries={countries} value={destinationCountryId} onChange={setDestinationCountryId} />
             </div>
             <div className="space-y-2 sm:col-span-2">
               <Label>Destination Port</Label>

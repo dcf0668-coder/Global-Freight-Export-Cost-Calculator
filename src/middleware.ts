@@ -23,20 +23,7 @@ export async function middleware(request: NextRequest) {
           return request.cookies.getAll();
         },
 
-        setAll(
-  cookiesToSet: {
-    name: string;
-    value: string;
-    options?: {
-      path?: string;
-      maxAge?: number;
-      expires?: Date;
-      httpOnly?: boolean;
-      secure?: boolean;
-      sameSite?: boolean | "lax" | "strict" | "none";
-    };
-  }[]
-) {
+        setAll(cookiesToSet: { name: string; value: string; options?: any }[]) {
           cookiesToSet.forEach(({ name, value }) => {
             request.cookies.set(name, value);
           });
