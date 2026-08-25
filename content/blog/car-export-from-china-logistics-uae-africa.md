@@ -4,7 +4,7 @@ excerpt: "Looking to export cars from China to the UAE or Africa? Discover pract
 category: AUTOMOBILE_EXPORT
 publishedAt: "2026-08-25"
 author: "Global Freight Calculator Team"
-coverImage: "/public/blog/car-export-from-china-logistics-uae-africa-cover.jpg"
+coverImage: "/blog/car-export-from-china-logistics-uae-africa-cover.jpg"
 ---
 
 # Car Export from China to UAE & Africa: Seamless Logistics with Our Calculator
