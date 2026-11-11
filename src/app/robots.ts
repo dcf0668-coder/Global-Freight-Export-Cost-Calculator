@@ -1,6 +1,24 @@
+
 import type { MetadataRoute } from "next";
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://globalfreightcalculator.com";
+const SITE_URL = (
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lang-mao.com"
+).replace(/\/+$/, "");
+
+const commonDisallow = [
+  "/admin/",
+  "/api/",
+  "/*?utm_",
+  "/*?fbclid=",
+];
+
+const aiUserAgents = [
+  "GPTBot",
+  "PerplexityBot",
+  "ClaudeBot",
+  "Google-Extended",
+  "Applebot-Extended",
+];
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -8,8 +26,13 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin", "/api"],
+        disallow: commonDisallow,
       },
+      ...aiUserAgents.map((userAgent) => ({
+        userAgent,
+        allow: "/",
+        disallow: commonDisallow,
+      })),
     ],
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
