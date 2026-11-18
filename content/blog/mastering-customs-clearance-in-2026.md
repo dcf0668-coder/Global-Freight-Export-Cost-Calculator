@@ -1,7 +1,8 @@
 ﻿---
 title: "Mastering Customs Clearance: Your Essential Guide for International Shipments in 2026"
+seoTitle: "Customs Clearance Guide for International Shipments 2026"
 excerpt: "Navigate global trade with our essential customs clearance guide for 2026. Learn about import duties, documentation, and trade regulations for smooth international shipments, especially to the UAE, Middle East, and Africa. Get your free freight cost estimate today."
-category: Shipping
+category: SHIPPING
 publishedAt: "2026-09-02"
 author: "Global Freight Calculator Team"
 keywords: "customs clearance guide, import duty calculator, customs documentation, trade regulations UAE"

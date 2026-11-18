@@ -1,7 +1,8 @@
 ---
 title: "Sea Freight vs. Air Freight: Choosing the Right Transport for Your Cargo in 2026"
+seoTitle: "Sea Freight vs Air Freight: Choosing the Right Transport"
 excerpt: "Deciding between sea freight and air freight for your cargo in 2026? Understand the trade-offs in speed, sea freight cost, and air freight calculator factors to choose the best cargo transport modes. Use our free calculator to compare rates!"
-category: Freight
+category: FREIGHT
 publishedAt: "2026-09-02"
 author: "Global Freight Calculator Team"
 

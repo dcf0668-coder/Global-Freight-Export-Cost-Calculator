@@ -1,7 +1,8 @@
 ---
 title: "Boost Your Business: Real-World Use Cases for Our Freight Calculator"
+seoTitle: "Freight Calculator Use Cases for Your Business"
 excerpt: "Discover how Lang-Mao's free freight calculator can streamline international shipping, optimize costs, and enhance supply chain efficiency for e-commerce, importers, exporters, and small businesses. Get instant global shipping rates."
-category: Freight
+category: FREIGHT
 publishedAt: "2026-09-03"
 author: "Global Freight Calculator Team"
 

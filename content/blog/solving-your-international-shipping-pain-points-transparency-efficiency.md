@@ -1,7 +1,8 @@
 ---
 title: "Solving Your International Shipping Pain Points: Transparency & Efficiency"
+seoTitle: "Shipping Pain Points: Transparency & Efficiency"
 excerpt: "Navigate common international shipping challenges with Lang-Mao.com. Get transparent freight quotes, overcome hidden costs, and improve supply chain visibility for efficient global trade."
-category: Trade Guide
+category: TRADE_GUIDE
 publishedAt: "2026-09-14"
 author: "Global Freight Calculator Team"
 keywords: "shipping challenges, hidden freight costs, freight quote accuracy, supply chain visibility"

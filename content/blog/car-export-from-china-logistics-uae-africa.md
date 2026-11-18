@@ -1,5 +1,6 @@
 ---
 title: "Car Export from China to UAE & Africa: Seamless Logistics with Our Calculator"
+seoTitle: "Car Export from China to UAE & Africa Guide"
 excerpt: "Looking to export cars from China to the UAE or Africa? Discover practical vehicle export logistics, freight cost estimation, shipping options, and dedicated WhatsApp support."
 category: AUTOMOBILE_EXPORT
 publishedAt: "2026-08-25"

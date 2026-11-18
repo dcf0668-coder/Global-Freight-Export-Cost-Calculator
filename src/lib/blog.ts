@@ -55,11 +55,13 @@ export function getBlogPostBySlug(slug: string): BlogPost | null {
     id: slug,
     slug,
     title: String(data.title),
+    seoTitle: data.seoTitle ? String(data.seoTitle) : undefined,
     excerpt: String(data.excerpt),
     content: content.trim(),
     category,
     coverImage: data.coverImage ? String(data.coverImage) : undefined,
     publishedAt: new Date(data.publishedAt).toISOString(),
+    updatedAt: data.updatedAt ? new Date(data.updatedAt).toISOString() : undefined,
     author: data.author ? String(data.author) : "Global Freight Calculator Team",
     readingTimeMinutes: data.readingTimeMinutes ? Number(data.readingTimeMinutes) : estimateReadingTime(content),
   };

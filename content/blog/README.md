@@ -13,14 +13,19 @@ directly at build time.
 ```yaml
    ---
    title: "Your Article Title"
+   seoTitle: "Shorter SEO Title (optional, <= 60 chars)"
    excerpt: "One or two sentences for the listing page and SEO description."
    category: TRADE_GUIDE
    publishedAt: "2026-08-10"
+   updatedAt: "2026-08-10"   # optional — defaults to publishedAt
    author: "Global Freight Calculator Team"
    ---
 ```
    `category` must be one of: `IMPORT`, `EXPORT`, `SHIPPING`, `FREIGHT`,
    `AUTOMOBILE_EXPORT`, `TRADE_GUIDE`.
+   `seoTitle` (optional) overrides the `<title>` shown in search results and
+   the browser tab; keep it to 60 characters or fewer. The H1 always uses
+   `title`.
 3. Write the article below the frontmatter in normal Markdown — headings,
    bold/italic, links, bullet/numbered lists, blockquotes, and tables are
    all supported.

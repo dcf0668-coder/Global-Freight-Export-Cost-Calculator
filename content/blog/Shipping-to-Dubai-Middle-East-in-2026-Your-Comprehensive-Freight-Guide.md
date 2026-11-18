@@ -1,5 +1,6 @@
 ---
 title: "Shipping to Dubai & Middle East in 2026: Your Comprehensive Freight Guide"
+seoTitle: "Shipping to Dubai & Middle East: Freight Guide 2026"
 excerpt: "Master shipping to Dubai and the Middle East in 2026 with our comprehensive guide. Get expert insights on freight forwarding UAE, customs, and use our free calculator for accurate shipping from China to Middle East costs"
 keywords: "shipping to Dubai, freight forwarding UAE, shipping from China to Middle East, Middle East import regulations"
 category: SHIPPING

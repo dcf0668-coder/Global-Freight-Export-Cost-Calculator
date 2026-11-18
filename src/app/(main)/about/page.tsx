@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
 import { Globe2, Ship, ShieldCheck } from "lucide-react";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "About Us",
-  description: "Global Freight Calculator helps exporters, importers, and freight forwarders estimate China-origin international shipping costs instantly.",
+  title: { absolute: "About Our Free Freight & Export Calculators" },
+  description:
+    "Learn how our free freight, RoRo, container and landed-cost calculators help exporters and forwarders estimate China shipping costs in seconds.",
   alternates: { canonical: "/about" },
+  openGraph: {
+    title: "About Our Free Freight & Export Calculators",
+    description:
+      "Free freight, RoRo, container and landed-cost calculators for exporters and forwarders shipping from China.",
+  },
 };
 
 export default function AboutPage() {
   return (
     <div className="container max-w-3xl py-12">
+      <Breadcrumbs items={[{ name: "Home", path: "/" }, { name: "About", path: "/about" }]} />
       <h1 className="mb-4 text-3xl font-bold tracking-tight">About Global Freight Calculator</h1>
       <p className="mb-6 text-muted-foreground">
         Global Freight Calculator is a free logistics tool built for importers, exporters, freight forwarders,

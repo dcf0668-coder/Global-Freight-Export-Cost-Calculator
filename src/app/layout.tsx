@@ -5,26 +5,25 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { WhatsAppCta } from "@/components/shared/whatsapp-cta";
+import { FloatingWhatsApp } from "@/components/shared/floating-whatsapp";
+import { SITE_NAME, SITE_URL } from "@/lib/site";
 
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 });
 
-// 正式网站地址（优先读取 Vercel 环境变量）
-const SITE_URL =
-  process.env.NEXT_PUBLIC_SITE_URL || "https://lang-mao.com";
-
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
 
   title: {
-    default: "Global Freight Calculator — Shipping Cost Estimator from China",
-    template: "%s | Global Freight Calculator",
+    default: "Shipping Cost from China | Free Freight Calculator",
+    template: `%s | ${SITE_NAME}`,
   },
 
   description:
-    "Free freight calculator for exporters shipping from China. Estimate container, LCL, RoRo, air, and rail shipping costs, transit times, and landed cost instantly.",
+    "Free freight and export cost calculators for shipping from China. Estimate container, LCL, RoRo, air and rail costs, transit times and landed cost.",
 
   keywords: [
     "freight calculator",
@@ -39,27 +38,24 @@ export const metadata: Metadata = {
     "international logistics",
   ],
 
-  authors: [
-    {
-      name: "Global Freight Calculator",
-    },
-  ],
+  authors: [{ name: SITE_NAME }],
 
   openGraph: {
     type: "website",
     locale: "en_US",
     url: SITE_URL,
-    siteName: "Global Freight Calculator",
-    title: "Global Freight Calculator — Shipping Cost Estimator from China",
+    siteName: SITE_NAME,
+    title: "Shipping Cost from China | Free Freight Calculator",
     description:
-      "Estimate international shipping costs from China in seconds.",
+      "Estimate container, LCL, RoRo, air and rail shipping costs from China in seconds.",
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "Global Freight Calculator",
+    title: SITE_NAME,
     description:
-      "Estimate international shipping costs from China in seconds.",
+      "Estimate container, LCL, RoRo, air and rail shipping costs from China in seconds.",
+    images: ["/opengraph-image"],
   },
 
   robots: {
@@ -89,8 +85,22 @@ export default function RootLayout({
           <div className="flex min-h-screen flex-col">
             <Navbar />
             <main className="flex-1">{children}</main>
+            <section className="border-t border-border/60 bg-muted/30">
+              <div className="container flex flex-col items-center justify-between gap-4 py-10 text-center md:flex-row md:text-left">
+                <div>
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    Sourcing vehicles in bulk from China?
+                  </h2>
+                  <p className="mt-1 max-w-xl text-muted-foreground">
+                    Chat with our team on WhatsApp for bulk vehicle procurement support and tailored logistics guidance.
+                  </p>
+                </div>
+                <WhatsAppCta source="footer-banner" variant="banner" className="shrink-0" />
+              </div>
+            </section>
             <Footer />
           </div>
+          <FloatingWhatsApp />
         </ThemeProvider>
       </body>
     </html>

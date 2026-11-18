@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Compass } from "lucide-react";
+import { WhatsAppCta } from "@/components/shared/whatsapp-cta";
 
 export default function NotFound() {
   return (
@@ -13,6 +14,10 @@ export default function NotFound() {
       <Button asChild>
         <Link href="/calculator">Go to Freight Calculator</Link>
       </Button>
+      <div className="mt-4">
+        <WhatsAppCta source="not-found" variant="outline" />
+      </div>
     </div>
   );
 }
+

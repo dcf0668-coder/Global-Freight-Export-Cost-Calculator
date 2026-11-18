@@ -4,18 +4,25 @@ import { ExternalLink } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 import { shippingLines } from "@/lib/data/shippingLines";
 
 export const metadata: Metadata = {
-  title: "Shipping Line Database — COSCO, MSC, Maersk & More",
+  title: { absolute: "Shipping Lines Directory: COSCO, MSC, Maersk, ONE" },
   description:
-    "Company profiles, coverage regions, and tracking links for major container and RoRo shipping lines serving China export routes.",
+    "Company profiles, coverage regions and tracking links for COSCO, MSC, Maersk, ONE and other container and RoRo lines serving China exports.",
   alternates: { canonical: "/shipping-lines" },
+  openGraph: {
+    title: "Shipping Lines Directory: COSCO, MSC, Maersk, ONE",
+    description:
+      "Company profiles, coverage regions and tracking links for major container and RoRo lines serving China exports.",
+  },
 };
 
 export default function ShippingLinesPage() {
   return (
     <div className="container py-12">
+      <Breadcrumbs items={[{ name: "Home", path: "/" }, { name: "Shipping Lines", path: "/shipping-lines" }]} />
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">
           Shipping Line Database
