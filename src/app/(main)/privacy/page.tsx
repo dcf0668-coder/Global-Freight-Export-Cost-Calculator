@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy",
-  description: "Privacy Policy for Global Freight Calculator.",
+  title: { absolute: "Privacy Policy" },
+  description:
+    "How Global Freight Calculator collects, uses and protects personal data from calculator inputs, contact form submissions and limited usage analytics.",
   alternates: { canonical: "/privacy" },
 };
 
 export default function PrivacyPage() {
   return (
     <div className="container max-w-3xl py-12">
+      <Breadcrumbs items={[{ name: "Home", path: "/" }, { name: "Privacy Policy", path: "/privacy" }]} />
       <h1 className="mb-6 text-3xl font-bold tracking-tight">Privacy Policy</h1>
       <div className="space-y-6 text-muted-foreground">
         <p>Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>

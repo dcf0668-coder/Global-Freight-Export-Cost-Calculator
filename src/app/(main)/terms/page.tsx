@@ -1,14 +1,17 @@
 import type { Metadata } from "next";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
 
 export const metadata: Metadata = {
-  title: "Terms of Service",
-  description: "Terms of Service for Global Freight Calculator.",
+  title: { absolute: "Terms of Service" },
+  description:
+    "Terms of service for Global Freight Calculator, covering non-binding estimates, acceptable use, intellectual property and limitation of liability.",
   alternates: { canonical: "/terms" },
 };
 
 export default function TermsPage() {
   return (
     <div className="container max-w-3xl py-12">
+      <Breadcrumbs items={[{ name: "Home", path: "/" }, { name: "Terms of Service", path: "/terms" }]} />
       <h1 className="mb-6 text-3xl font-bold tracking-tight">Terms of Service</h1>
       <div className="space-y-6 text-muted-foreground">
         <p>Last updated: {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}</p>

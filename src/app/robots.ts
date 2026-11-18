@@ -1,9 +1,6 @@
 
 import type { MetadataRoute } from "next";
-
-const SITE_URL = (
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lang-mao.com"
-).replace(/\/+$/, "");
+import { SITE_URL } from "@/lib/site";
 
 const commonDisallow = [
   "/admin/",

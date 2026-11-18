@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { ports } from "@/lib/data/ports";
 import { RoroCalculatorInput, RoroCalculatorResult, VehicleType } from "@/types";
 import { formatCurrency } from "@/lib/utils";
+import { WhatsAppCta } from "@/components/shared/whatsapp-cta";
 
 const CHINA_PORTS = ports.filter((p) => p.countryId === "cn" && p.roroAvailable);
 const DEST_RORO_PORTS = ports.filter((p) => p.countryId !== "cn" && p.roroAvailable);
@@ -124,6 +125,10 @@ export function RoroCalculatorForm() {
                 <Row label="Documentation Fee" value={result.documentationFee} currency={result.currency} />
                 <Row label="Inspection Fee" value={result.inspectionFee} currency={result.currency} />
                 {result.insurance > 0 && <Row label="Insurance" value={result.insurance} currency={result.currency} />}
+              </div>
+              <div className="rounded-lg bg-muted/60 p-3">
+                <p className="mb-2 text-sm font-semibold text-foreground">Exporting vehicles in bulk?</p>
+                <WhatsAppCta source="result-roro" variant="primary" className="w-full" />
               </div>
             </CardContent>
           </Card>

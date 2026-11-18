@@ -215,11 +215,14 @@ export interface BlogPost {
   id: string;
   slug: string;
   title: string;
+  /** Optional meta-title override (<= 60 chars); falls back to `title` when absent. */
+  seoTitle?: string;
   excerpt: string;
   content: string; // markdown
   category: "IMPORT" | "EXPORT" | "SHIPPING" | "FREIGHT" | "AUTOMOBILE_EXPORT" | "TRADE_GUIDE";
   coverImage?: string;
   publishedAt: string; // ISO date
+  updatedAt?: string; // ISO date — falls back to publishedAt when absent
   author: string;
   readingTimeMinutes: number;
 }

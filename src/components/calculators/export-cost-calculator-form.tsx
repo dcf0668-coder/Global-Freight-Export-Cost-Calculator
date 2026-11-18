@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ExportCostInput, ExportCostResult } from "@/types";
 import { formatCurrency } from "@/lib/utils";
+import { WhatsAppCta } from "@/components/shared/whatsapp-cta";
 
 const defaultInput: ExportCostInput = {
   vehiclePriceExw: 12000,
@@ -99,6 +100,9 @@ export function ExportCostCalculatorForm() {
                     <span className="font-medium">{formatCurrency(row.amount)}</span>
                   </div>
                 ))}
+              </div>
+              <div className="border-t border-border pt-4">
+                <WhatsAppCta source="result-export-cost" variant="primary" className="w-full" />
               </div>
             </CardContent>
           </Card>

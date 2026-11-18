@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllBlogPosts } from "@/lib/blog";
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://globalfreightcalculator.com";
+import { SITE_URL, SITE_LAST_UPDATED } from "@/lib/site";
 
 const STATIC_ROUTES = [
   "",
@@ -22,14 +21,14 @@ const STATIC_ROUTES = [
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticEntries: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
     url: `${SITE_URL}${route}`,
-    lastModified: new Date(),
+    lastModified: SITE_LAST_UPDATED,
     changeFrequency: route === "" ? "daily" : "weekly",
     priority: route === "" ? 1 : 0.7,
   }));
 
   const blogEntries: MetadataRoute.Sitemap = getAllBlogPosts().map((post) => ({
     url: `${SITE_URL}/blog/${post.slug}`,
-    lastModified: new Date(post.publishedAt),
+    lastModified: post.updatedAt ?? post.publishedAt,
     changeFrequency: "monthly",
     priority: 0.5,
   }));

@@ -1,8 +1,10 @@
 ﻿---
 title: "Your Article Title Here"
+seoTitle: "Shorter SEO Title (optional, <= 60 chars)"
 excerpt: "One or two sentences summarizing the article — this shows on the blog listing page and in search results, so make it count."
 category: TRADE_GUIDE
 publishedAt: "2026-08-10"
+# updatedAt: "2026-08-10"       # optional — defaults to publishedAt
 author: "Global Freight Calculator Team"
 # coverImage: "/blog/your-image.jpg"   # optional — uncomment and add a real image to /public/blog/
 ---

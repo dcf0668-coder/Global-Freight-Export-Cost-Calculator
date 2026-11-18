@@ -1,11 +1,15 @@
 ﻿import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Badge } from "@/components/ui/badge";
-import { getAllBlogSlugs, getBlogPostBySlug } from "@/lib/blog";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { BlogPostingJsonLd } from "@/components/seo/json-ld";
+import { WhatsAppCta } from "@/components/shared/whatsapp-cta";
+import { getAllBlogPosts, getAllBlogSlugs, getBlogPostBySlug } from "@/lib/blog";
+import type { BlogPost } from "@/types";
 
 export function generateStaticParams() {
   return getAllBlogSlugs().map((slug) => ({ slug }));
@@ -15,11 +19,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = getBlogPostBySlug(slug);
   if (!post) return {};
+  const title = post.seoTitle ?? post.title;
   return {
-    title: post.title,
+    title: { absolute: title },
     description: post.excerpt,
     alternates: { canonical: `/blog/${post.slug}` },
-    openGraph: { title: post.title, description: post.excerpt, type: "article", publishedTime: post.publishedAt },
+    openGraph: {
+      title,
+      description: post.excerpt,
+      type: "article",
+      publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt ?? post.publishedAt,
+      images: post.coverImage
+        ? [{ url: post.coverImage }]
+        : [{ url: "/opengraph-image", width: 1200, height: 630 }],
+    },
   };
 }
 
@@ -32,23 +46,42 @@ const CATEGORY_LABELS: Record<string, string> = {
   TRADE_GUIDE: "Trade Guide",
 };
 
+const CATEGORY_CALCULATOR: Record<string, { href: string; label: string }> = {
+  IMPORT: { href: "/calculator", label: "Freight Calculator" },
+  EXPORT: { href: "/export-cost-calculator", label: "Export Cost Calculator" },
+  SHIPPING: { href: "/calculator", label: "Freight Calculator" },
+  FREIGHT: { href: "/calculator", label: "Freight Calculator" },
+  AUTOMOBILE_EXPORT: { href: "/roro-calculator", label: "RoRo Calculator" },
+  TRADE_GUIDE: { href: "/export-cost-calculator", label: "Export Cost Calculator" },
+};
+
+function getRelatedPosts(current: BlogPost, all: BlogPost[]): BlogPost[] {
+  const others = all.filter((p) => p.slug !== current.slug);
+  const sameCategory = others.filter((p) => p.category === current.category);
+  const rest = others.filter((p) => p.category !== current.category);
+  return [...sameCategory, ...rest].slice(0, 3);
+}
+
 export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const post = getBlogPostBySlug(slug);
   if (!post) notFound();
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    description: post.excerpt,
-    datePublished: post.publishedAt,
-    author: { "@type": "Organization", name: post.author },
-  };
+  const allPosts = getAllBlogPosts();
+  const related = getRelatedPosts(post, allPosts);
+  const calculator = CATEGORY_CALCULATOR[post.category] ?? { href: "/calculator", label: "Freight Calculator" };
+  const isVehicle = post.category === "AUTOMOBILE_EXPORT";
 
   return (
     <article className="container max-w-3xl py-12">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <BlogPostingJsonLd post={post} />
+      <Breadcrumbs
+        items={[
+          { name: "Home", path: "/" },
+          { name: "Blog", path: "/blog" },
+          { name: post.title, path: `/blog/${post.slug}` },
+        ]}
+      />
       <Link href="/blog" className="mb-6 inline-flex items-center text-sm text-muted-foreground hover:text-foreground">
         <ArrowLeft className="mr-1 h-4 w-4" /> Back to Blog
       </Link>
@@ -88,11 +121,57 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             th: ({ children }) => <th className="border border-border bg-muted px-3 py-2 text-left font-semibold">{children}</th>,
             td: ({ children }) => <td className="border border-border px-3 py-2 text-muted-foreground">{children}</td>,
             code: ({ children }) => <code className="rounded bg-muted px-1.5 py-0.5 text-sm">{children}</code>,
+            img: ({ src, alt }) => {
+              if (!alt) {
+                console.warn(`[blog] Image is missing alt text in "${post.slug}" (src: ${src ?? "none"}).`);
+              }
+              return <img src={src as string} alt={alt ?? ""} className="my-4 max-w-full rounded-lg" />;
+            },
           }}
         >
           {post.content}
         </ReactMarkdown>
       </div>
+
+      <section className="mt-10 rounded-xl border border-border bg-muted/40 p-6">
+        <h2 className="text-lg font-semibold">
+          {isVehicle ? "Sourcing vehicles in bulk from China?" : "Need a quote for your shipment?"}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {isVehicle
+            ? "Chat with our team on WhatsApp for bulk vehicle procurement support and tailored logistics guidance."
+            : "Chat with our team on WhatsApp for a tailored freight estimate for your cargo."}
+        </p>
+        <div className="mt-4">
+          <WhatsAppCta source={`blog-${post.slug}`} variant="primary" />
+        </div>
+      </section>
+
+      {related.length > 0 && (
+        <section className="mt-10">
+          <h2 className="text-xl font-bold tracking-tight">Related articles</h2>
+          <ul className="mt-4 space-y-2">
+            {related.map((p) => (
+              <li key={p.slug}>
+                <Link
+                  href={`/blog/${p.slug}` as any}
+                  className="text-primary underline underline-offset-2 hover:no-underline"
+                >
+                  {p.title}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-6">
+            <Link
+              href={calculator.href as any}
+              className="inline-flex items-center text-sm font-medium text-primary hover:underline"
+            >
+              Try the {calculator.label} <ArrowRight className="ml-1 h-4 w-4" />
+            </Link>
+          </div>
+        </section>
+      )}
     </article>
   );
 }

@@ -7,6 +7,7 @@ import { Menu, Ship, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
+import { WhatsAppCta } from "@/components/shared/whatsapp-cta";
 
 const NAV_LINKS: { href: string; label: string }[] = [
   { href: "/calculator", label: "Freight Calculator" },
@@ -48,9 +49,10 @@ export function Navbar() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button asChild className="hidden sm:inline-flex">
+          <Button asChild variant="outline" className="hidden sm:inline-flex">
             <Link href="/calculator">Start Calculating</Link>
           </Button>
+          <WhatsAppCta source="navbar" variant="primary" className="hidden sm:inline-flex" />
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen((v) => !v)} aria-label="Toggle menu">
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </Button>
@@ -73,6 +75,9 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
+            <div className="mt-2 border-t border-border/60 pt-3">
+              <WhatsAppCta source="navbar" variant="primary" className="w-full" />
+            </div>
           </div>
         </nav>
       )}

@@ -15,6 +15,7 @@ import { ports, getPortsByCountry } from "@/lib/data/ports";
 import { countries } from "@/lib/data/countries";
 import { CalculatorInput, CalculatorResult, CargoType, ContainerSize } from "@/types";
 import { formatCurrency } from "@/lib/utils";
+import { WhatsAppCta } from "@/components/shared/whatsapp-cta";
 
 const CHINA_PORTS = ports.filter((p) => p.countryId === "cn");
 
@@ -226,6 +227,9 @@ export function FreightCalculatorForm({ initialDestination }: { initialDestinati
                   <p className="text-xs text-muted-foreground">
                     This is an indicative estimate, not a binding freight quote. Actual rates vary by carrier, season, and fuel surcharges.
                   </p>
+                  <div className="border-t border-border pt-4">
+                    <WhatsAppCta source="result-freight" variant="primary" className="w-full" />
+                  </div>
                 </CardContent>
               </Card>
             </motion.div>

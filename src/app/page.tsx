@@ -1,15 +1,22 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Container, Globe2, Ship, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { HeroSearch } from "@/components/shared/hero-search";
+import { WhatsAppCta } from "@/components/shared/whatsapp-cta";
+import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo/json-ld";
 import { countries } from "@/lib/data/countries";
 import { ports } from "@/lib/data/ports";
 import { shippingLines } from "@/lib/data/shippingLines";
+import { approximateCount } from "@/lib/site";
+
+const countryCount = approximateCount(countries.length);
+const portCount = approximateCount(ports.length);
 
 const STATS = [
-  { label: "Supported Countries", value: `${countries.length}+`, icon: Globe2 },
-  { label: "Supported Ports", value: `${ports.length}+`, icon: Ship },
+  { label: "Supported Countries", value: `${countryCount}`, icon: Globe2 },
+  { label: "Supported Ports", value: `${portCount}`, icon: Ship },
   { label: "Shipping Lines", value: `${shippingLines.length}+`, icon: Container },
   { label: "Container Types", value: "4", icon: Truck },
 ];
@@ -21,18 +28,21 @@ const CALCULATORS = [
   { href: "/export-cost-calculator", title: "Export Cost Calculator", desc: "Full landed cost from EXW to destination selling price." },
 ];
 
-export default function HomePage() {
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "Global Freight Calculator",
-    description: "Free shipping cost estimation tools for exporters, importers, and freight forwarders shipping from China worldwide.",
-    url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://globalfreightcalculator.com",
-  };
+export const metadata: Metadata = {
+  title: { absolute: "Shipping Cost from China | Free Freight Calculator" },
+  description: `Estimate FCL, LCL, RoRo, air and rail freight from China to ${countryCount} countries in seconds. Free tool with transit time and port charges.`,
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Shipping Cost from China | Free Freight Calculator",
+    description: `Estimate FCL, LCL, RoRo, air and rail freight from China to ${countryCount} countries in seconds.`,
+  },
+};
 
+export default function HomePage() {
   return (
     <div>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <OrganizationJsonLd />
+      <WebSiteJsonLd />
       <section className="gradient-hero relative overflow-hidden py-20 md:py-28">
         <div className="container relative text-center">
           <h1 className="mx-auto max-w-3xl text-balance text-4xl font-bold tracking-tight md:text-6xl">
@@ -55,6 +65,10 @@ export default function HomePage() {
             <Button size="lg" variant="outline" asChild>
               <Link href="/countries">Browse Countries</Link>
             </Button>
+          </div>
+
+          <div className="mt-4 flex justify-center">
+            <WhatsAppCta source="home-hero" variant="outline" />
           </div>
         </div>
       </section>
@@ -95,3 +109,4 @@ export default function HomePage() {
     </div>
   );
 }
+

@@ -1,5 +1,6 @@
 ---
 title: "Navigating African Shipping: A 2026 Guide for Seamless Cargo Transport"
+seoTitle: "African Shipping Guide 2026: Seamless Cargo Transport"
 excerpt: "Master the complexities of shipping to Africa in 2026. Discover major logistics hubs, overcome common challenges, and get real-time freight estimates with our free calculator."
 category: AUTOMOBILE_EXPORT
 publishedAt: "2026-08-28"

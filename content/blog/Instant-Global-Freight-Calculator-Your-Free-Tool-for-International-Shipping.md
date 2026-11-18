@@ -1,7 +1,8 @@
 ---
 title: "Instant Global Freight Calculator: Your Free Tool for International Shipping"
+seoTitle: "Free Global Freight Calculator for International Shipping"
 excerpt: "Get instant, free international freight rates for sea, air, and land with our global freight calculator. Estimate shipping costs for cargo worldwide, no registration needed."
-category: Shipping
+category: SHIPPING
 publishedAt: "2026-09-07"
 author: "Global Freight Calculator Team"
 keywords: "freight calculator, shipping cost calculator, international freight rates, cargo shipping cost"

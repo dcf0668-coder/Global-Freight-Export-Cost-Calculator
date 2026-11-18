@@ -85,7 +85,8 @@ prisma/
 
 1. Push this repo to GitHub.
 2. Import into Vercel, set the environment variables from `.env.example`.
-3. Add a Vercel Postgres/Supabase build step or run `prisma migrate deploy` in a release step.
+3. Set `NEXT_PUBLIC_SITE_URL=https://lang-mao.com` (the canonical domain used for `metadataBase`, `sitemap.xml`, `robots.txt` and canonical URLs) and redeploy.
+4. Add a Vercel Postgres/Supabase build step or run `prisma migrate deploy` in a release step.
 
 ---
 
